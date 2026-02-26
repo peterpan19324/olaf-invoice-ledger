@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+
+  dbt:
+    build:
+      context: ./dbt
+      dockerfile: Dockerfile
+    environment:
+      DUCKDB_PATH: /data/invoice_ledger.duckdb
+    volumes:
+      - duckdb_data:/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      DUCKDB_PATH: /data/invoice_ledger.duckdb
+    ports:
+      - "8000:8000"
+    volumes:
+      - duckdb_data:/data
+    depends_on:
+      dbt:
+        condition: service_completed_successfully
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    environment:
+      BACKEND_URL: http://backend:8000
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+volumes:
+  duckdb_data:

@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  - name: mart_invoice_ledger
+    description: >
+      The stable, public-facing invoice ledger. This is the single source of truth
+      consumed by the API. Schema changes here are breaking changes and must be
+      versioned. Staging and intermediate models are internal implementation details.
+    columns:
+      - name: invoice_id
+        tests: [unique, not_null]
+      - name: client_name
+        tests: [not_null]
+      - name: client_country
+        tests: [not_null]
+      - name: invoice_status
+        tests:
+          - not_null
+          - accepted_values:
+              values: [draft, sent, paid, overdue, cancelled]
+      - name: payment_status
+        tests:
+          - not_null
+          - accepted_values:
+              values: [paid, partial, unpaid]
+      - name: balance_due
+        description: >
+          Remaining amount owed. Zero or negative means fully paid.
+          Derived from amount - total_paid; never recalculated downstream.
