@@ -1,0 +1,49 @@
+version: 2
+
+models:
+  - name: stg_invoices
+    description: >
+      Cleaned and typed invoices. Casts raw strings to proper types and
+      normalises status/currency casing. No business logic — only shape corrections.
+    columns:
+      - name: invoice_id
+        description: Unique invoice identifier.
+        tests: [unique, not_null]
+      - name: client_id
+        tests: [not_null]
+      - name: issue_date
+        tests: [not_null]
+      - name: due_date
+        tests: [not_null]
+      - name: amount
+        tests: [not_null]
+      - name: currency
+        tests: [not_null]
+      - name: status
+        tests:
+          - not_null
+          - accepted_values:
+              values: [draft, sent, paid, overdue, cancelled]
+
+  - name: stg_clients
+    description: >
+      Cleaned client reference data. Renames columns to be self-descriptive
+      when joined downstream.
+    columns:
+      - name: client_id
+        tests: [unique, not_null]
+      - name: client_name
+        tests: [not_null]
+      - name: client_country
+        tests: [not_null]
+
+  - name: stg_payments
+    description: >
+      Cleaned payment transactions. One row per payment event.
+    columns:
+      - name: payment_id
+        tests: [unique, not_null]
+      - name: invoice_id
+        tests: [not_null]
+      - name: amount_paid
+        tests: [not_null]

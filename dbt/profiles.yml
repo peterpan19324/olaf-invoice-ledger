@@ -1,0 +1,8 @@
+invoice_ledger:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "{{ env_var('DUCKDB_PATH', '../data/invoice_ledger.duckdb') }}"
+      schema: main
+      threads: 4

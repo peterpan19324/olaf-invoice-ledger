@@ -1,0 +1,17 @@
+version: 2
+
+models:
+  - name: int_invoice_payments
+    description: >
+      Each invoice row enriched with pre-aggregated payment totals.
+      Separating aggregation here keeps the mart free of GROUP BY complexity
+      and makes the intermediate logic independently testable.
+    columns:
+      - name: invoice_id
+        tests: [unique, not_null]
+      - name: total_paid
+        description: >
+          Sum of all payment amounts received for this invoice.
+          Zero when no payments have been recorded.
+      - name: payment_count
+        description: Number of individual payment transactions recorded.
